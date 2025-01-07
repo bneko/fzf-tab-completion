@@ -226,7 +226,7 @@ fzf_bash_completion() {
     printf '%s' "$(_fzf_bash_completion_loading_msg)"
     command tput rc 2>/dev/null || echo -ne "\0338"
 
-    local raw_comp_words=()
+    local raw_comp_words=() comp_words=()
     local COMP_WORDS=() COMP_CWORD COMP_POINT COMP_LINE
     local COMP_TYPE=37 # % == indicates menu completion
     local line="${READLINE_LINE:0:READLINE_POINT}"
@@ -240,7 +240,12 @@ fzf_bash_completion() {
     if [[ ${#raw_comp_words[@]} -gt 1 ]]; then
         _fzf_bash_completion_expand_alias "${raw_comp_words[@]}"
     fi
-    readarray -t COMP_WORDS < <(printf '%s\n' "${raw_comp_words[@]}" | _fzf_bash_completion_unquote_strings)
+    local i
+    for i in "${!raw_comp_words[@]}"; do
+        comp_words[i]=${raw_comp_words[i]//\\/}
+    done
+    unset i
+    readarray -t COMP_WORDS < <(printf '%s\n' "${comp_words[@]}" | _fzf_bash_completion_unquote_strings)
 
     printf -v COMP_LINE '%s' "${COMP_WORDS[@]}"
     COMP_POINT="${#COMP_LINE}"
