@@ -237,9 +237,9 @@ fzf_bash_completion() {
         readarray -t raw_comp_words < <(_fzf_bash_completion_parse_line <<<"$line")
     fi
 
-    if [[ ${#raw_comp_words[@]} -gt 1 ]]; then
-        _fzf_bash_completion_expand_alias "${raw_comp_words[@]}"
-    fi
+    #if [[ ${#raw_comp_words[@]} -gt 1 ]]; then
+    #    _fzf_bash_completion_expand_alias "${raw_comp_words[@]}"
+    #fi
     local i
     for i in "${!raw_comp_words[@]}"; do
         comp_words[i]=${raw_comp_words[i]//\\/}
