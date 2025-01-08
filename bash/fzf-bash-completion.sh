@@ -221,10 +221,10 @@ fzf_bash_completion() {
         return 1
     fi
 
-    printf '\r'
-    command tput sc 2>/dev/null || echo -ne "\0337"
-    printf '%s' "$(_fzf_bash_completion_loading_msg)"
-    command tput rc 2>/dev/null || echo -ne "\0338"
+    #printf '\r'
+    #command tput sc 2>/dev/null || echo -ne "\0337"
+    #printf '%s' "$(_fzf_bash_completion_loading_msg)"
+    #command tput rc 2>/dev/null || echo -ne "\0338"
 
     local raw_comp_words=() comp_words=()
     local COMP_WORDS=() COMP_CWORD COMP_POINT COMP_LINE
@@ -289,8 +289,8 @@ fzf_bash_completion() {
         (( READLINE_POINT+=${#COMPREPLY} - ${#raw_cur} ))
     fi
 
-    printf '\r'
-    command tput el 2>/dev/null || echo -ne "\033[K"
+    #printf '\r'
+    #command tput el 2>/dev/null || echo -ne "\033[K"
 }
 
 _fzf_bash_completion_selector() {
