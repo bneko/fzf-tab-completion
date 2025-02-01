@@ -280,6 +280,7 @@ fzf_bash_completion() {
     local raw_cur="${cur:+${raw_comp_words[-1]}}"
 
     local COMPREPLY=
+    FZF_COMPLETION_PID=$$ \
     fzf_bash_completer "$cmd" "$cur" "$prev"
     if [ -n "$COMPREPLY" ]; then
         if [ -n "$raw_cur" ]; then
