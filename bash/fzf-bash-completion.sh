@@ -216,10 +216,13 @@ _fzf_bash_completion_loading_msg() {
 }
 
 fzf_bash_completion() {
+: >| ~/fzf-comp
     # bail early if no_empty_cmd_completion
     if ! [[ "$READLINE_LINE" =~ [^[:space:]] ]] && shopt -q no_empty_cmd_completion; then
         return 1
     fi
+declare -p READLINE_LINE >> ~/fzf-comp
+declare -p READLINE_POINT >> ~/fzf-comp
 
     #printf '\r'
     #command tput sc 2>/dev/null || echo -ne "\0337"
@@ -230,25 +233,32 @@ fzf_bash_completion() {
     local COMP_WORDS=() COMP_CWORD COMP_POINT COMP_LINE
     local COMP_TYPE=37 # % == indicates menu completion
     local line="${READLINE_LINE:0:READLINE_POINT}"
+declare -p line >> ~/fzf-comp
     local wordbreaks="$COMP_WORDBREAKS"
     wordbreaks="${wordbreaks//[]^]/\\&}"
     wordbreaks="${wordbreaks//[[:space:]]/}"
     if [[ "$line" =~ [^[:space:]] ]]; then
         readarray -t raw_comp_words < <(_fzf_bash_completion_parse_line <<<"$line")
+declare -p raw_comp_words >> ~/fzf-comp
     fi
 
     #if [[ ${#raw_comp_words[@]} -gt 1 ]]; then
     #    _fzf_bash_completion_expand_alias "${raw_comp_words[@]}"
+#declare -p raw_comp_words >> ~/fzf-comp
     #fi
     local i
     for i in "${!raw_comp_words[@]}"; do
         comp_words[i]=${raw_comp_words[i]//\\/}
     done
     unset i
+declare -p comp_words >> ~/fzf-comp
     readarray -t COMP_WORDS < <(printf '%s\n' "${comp_words[@]}" | _fzf_bash_completion_unquote_strings)
+declare -p COMP_WORDS >> ~/fzf-comp
 
     printf -v COMP_LINE '%s' "${COMP_WORDS[@]}"
+declare -p COMP_LINE >> ~/fzf-comp
     COMP_POINT="${#COMP_LINE}"
+declare -p COMP_POINT >> ~/fzf-comp
     # remove the ones that just spaces
     local i
     # iterate in reverse
@@ -257,6 +267,7 @@ fzf_bash_completion() {
             COMP_WORDS=( "${COMP_WORDS[@]:0:i}" "${COMP_WORDS[@]:i+1}" )
         fi
     done
+declare -p COMP_WORDS >> ~/fzf-comp
     # add an extra blank word if last word is just space
     if [[ "${#COMP_WORDS[@]}" = 0 ]]; then
         COMP_WORDS+=( '' )
@@ -265,6 +276,7 @@ fzf_bash_completion() {
     fi
     COMP_CWORD="${#COMP_WORDS[@]}"
     (( COMP_CWORD-- ))
+declare -p COMP_WORDS >> ~/fzf-comp
 
     local cmd="${COMP_WORDS[0]}"
     local prev
@@ -277,6 +289,10 @@ fzf_bash_completion() {
     if [[ "$cur" =~ ^[$wordbreaks]$ ]]; then
         cur=
     fi
+declare -p cmd >> ~/fzf-comp
+declare -p cur >> ~/fzf-comp
+declare -p prev >> ~/fzf-comp
+declare -p raw_comp_words >> ~/fzf-comp
     local raw_cur="${cur:+${raw_comp_words[-1]}}"
 
     local COMPREPLY=
@@ -284,12 +300,18 @@ fzf_bash_completion() {
     FZF_COMPLETION_CUR=${raw_cur} \
     FZF_COMPLETION_START_TIME_UTC_MS=$(date -u +%s%3N) \
     fzf_bash_completer "$cmd" "$cur" "$prev"
+declare -p COMPREPLY >> ~/fzf-comp
     if [ -n "$COMPREPLY" ]; then
+declare -p raw_cur >> ~/fzf-comp
         if [ -n "$raw_cur" ]; then
+declare -p line >> ~/fzf-comp
             line="${line::-${#raw_cur}}"
+declare -p line >> ~/fzf-comp
         fi
         READLINE_LINE="${line}${COMPREPLY}${READLINE_LINE:$READLINE_POINT}"
+declare -p READLINE_LINE >> ~/fzf-comp
         (( READLINE_POINT+=${#COMPREPLY} - ${#raw_cur} ))
+declare -p READLINE_POINT >> ~/fzf-comp
     fi
 
     #printf '\r'
